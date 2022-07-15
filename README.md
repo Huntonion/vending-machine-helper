@@ -188,7 +188,7 @@ The python application will look like this:
 ![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/VMHapp.png?raw=true)
 
 The available commands are: 
-* INFO <SERIALS>, to retrive information about the products relative to the serials inserted. For instance `INFO SERIAL VM1 VM2`
-* CLEAR <SERIALS>, to set the local earnings to zero.
+* INFO *serials*, to retrive information about the products relative to the serials inserted. For instance `INFO VM1 VM2`
+* CLEAR *serials*, to set the local earnings to zero. Example: `CLEAR VM1 VM2`
 * REFILL, to refill all the machines. Unfortunately Vending Machine Helper does not support single machine refill yet.
 * QUIT, to quit.
