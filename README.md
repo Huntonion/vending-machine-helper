@@ -22,6 +22,7 @@ Which are both message triggered.
 
 ## Architecture
 
+![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/VMH.png?raw=true)
 
 The Amazon Web Services were emulated using LocalStack. Both the 
 devices(vending machines) and the gateway were simulated on 
