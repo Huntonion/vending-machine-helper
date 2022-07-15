@@ -173,3 +173,21 @@ Then the flows can be operated either by injecting the `run simulation` node whi
 
 ![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/nodered.png?raw=true)
 
+## Interacting with the application
+
+First it is necessary to install the dependencies:
+```
+pip install -r requirements.txt
+```
+Then simply run:
+```
+python3 VMH.py
+```
+The python application will look like this: 
+
+![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/VMHapp.png?raw=true)
+
+The available commands are: 
+* INFO <SERIALS>, to retrive information about the products relative to the serials inserted. For instance `INFO SERIAL VM1 VM2`
+* CLEAR <SERIALS>, to set the local earnings to zero.
+* REFILL, to refill all the machines. Unfortunately Vending Machine Helper does not support single machine refill yet.
