@@ -4,7 +4,7 @@ import datetime
 import json
 
 def lambda_handler(event, context):
-	key = "iNHdGQfryF6mYG-kyENYJPsCarHrpMcwDVMWq5erzVt"
+	key = "<key>"
 	url = "https://maker.ifttt.com/trigger/vmh_error/with/key/"+key
 	for record in event['Records']:
 		msgBody = json.loads(record['body'])
