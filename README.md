@@ -191,3 +191,4 @@ The available commands are:
 * INFO <SERIALS>, to retrive information about the products relative to the serials inserted. For instance `INFO SERIAL VM1 VM2`
 * CLEAR <SERIALS>, to set the local earnings to zero.
 * REFILL, to refill all the machines. Unfortunately Vending Machine Helper does not support single machine refill yet.
+* QUIT, to quit.
