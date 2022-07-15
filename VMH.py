@@ -16,6 +16,7 @@ print('Welcome to Vending Machine Helper!')
 print('Accepted Commands:')
 print('INFO *serial* in order to show informations regarding a specific machine')
 print('CLEAR *serial* in order to set the local total of a machine to 0')
+print('REFILL to restore all the machine to the initial configuration of the json file')
 print('QUIT to exit.')
 while True:
     user_input = input("Command:")
