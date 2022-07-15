@@ -15,7 +15,7 @@ functions (two in this case):
 * One to update information about a certain vending machine in DynamoDB 
 (or 
 create a new item if the Vending Machine didn't have any entry yet)
-*One to notify the user when there's a problem. 
+* One to notify the user when there's a problem. 
 
 Which are both message triggered.
 
