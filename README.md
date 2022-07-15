@@ -43,16 +43,39 @@ used the functionalities offered by the boto3 library.
 
 ## Setting up Node-RED and MosquittoMQTT
 
-First start the docker containers:
+First of all run
+
+```
+git clone https://github.com/Huntonion/vending-machine-helper
+```
+
+Then start the docker containers
 ```
 docker run -itd -p 1880:1880 -v node_red_data:/data --network VMH --name nodered_VMH nodered/node-red
 
 docker run -itd --network VMH --name mybroker eclipse-mosquitto mosquitto -c /mosquitto-no-auth.conf
 
-docker run --rm --network VMH --name awslocal -it -p 4566:4566 -p 4571:4571 localstack/localstack
  ```
+In order to simulate the devices, the application uses a Json file (devices.json), which at the moment includes 8 devices, however, as long as the document is correctly formatted, you can add as many devices as you want up to potentially an infinite number. Therefore, the next step is to copy the devices.json file into the container, to do so:
 
-
+```
+docker cp devices.json nodered_VMH:/data/devices.json
+```
+Then, since some of the nodes in the project use the aws-sdk, first it has to be installed on the container:
+```
+docker exec nodered_VMH npm install aws-sdk
+```
+Copy the settings.js out of the container:
+```
+Docker cp nodered_VMH:/data/settings.js settings.js
+```
+And add a line in the file
+```
+FunctionGlobalContext:{
+   os:require('os'),
+   awsModule:require('aws-sdk')
+},
+```
 
 
 
