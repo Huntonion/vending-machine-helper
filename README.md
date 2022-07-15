@@ -35,11 +35,11 @@ used the functionalities offered by the boto3 library.
 
 ## Installation
 
-# Prerequisites
+## Prerequisites
 
 * Docker
 * AWS CLI
-* boto3
+
 
 ## Setting up Node-RED and MosquittoMQTT
 
