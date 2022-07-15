@@ -56,7 +56,7 @@ docker run -itd -p 1880:1880 -v node_red_data:/data --network VMH --name nodered
 docker run -itd --network VMH --name mybroker eclipse-mosquitto mosquitto -c /mosquitto-no-auth.conf
 
  ```
-In order to simulate the devices, the application uses a Json file (devices.json), which at the moment includes 8 devices, however, as long as the document is correctly formatted, you can add as many devices as you want up to potentially an infinite number. Therefore, the next step is to copy the devices.json file into the container, to do so:
+In order to simulate the devices, the application uses a Json file (devices.json), which at the moment includes 8 devices, however, as long as the document is correctly formatted, you can add as many devices as you want up to potentially an infinite number. Therefore, the next step is to copy the devices.json file into the volume, to do so (this project was developed on MAC OS , and accessing the volume directly is not possible, therefore the most suitable solution was to copy and paste the files out and back in the volume):
 
 ```
 docker cp devices.json nodered_VMH:/data/devices.json
@@ -65,7 +65,7 @@ Then, since some of the nodes in the project use the aws-sdk, first it has to be
 ```
 docker exec nodered_VMH npm install aws-sdk
 ```
-Copy the settings.js out of the container:
+Copy the settings.js out of the volume:
 ```
 Docker cp nodered_VMH:/data/settings.js settings.js
 ```
@@ -76,7 +76,7 @@ FunctionGlobalContext:{
    awsModule:require('aws-sdk') //add this line
 },
 ```
-And copy back the file into the container.
+And copy back the file into the volume.
 ```
 Docker cp settings.js nodered_VMH:/data/settings.js
 ```
@@ -88,5 +88,56 @@ docker run --rm --network VMH --name awslocal -it -p 4566:4566 -p 4571:4571  loc
 ```
 Once the container is running, run `aws config` to configurate it.
 
+Create a role for our lambda function:
+```
+aws iam create-role --role-name lambdaVMHRole 
+--assume-role-policy-document 
+file://role.json --endpoint-url=http://localhost:4566
+```
 
+And assign a policy to it:
+```
+aws iam put-role-policy --role-name lambdaVMHRole --policy-name 
+lambdaPolicy --policy-document file://policy.json 
+--endpoint-url=http://localhost:4566
+```
 
+zip both functions:
+```
+zip function.zip error.py
+zip function.zip sale.py
+```
+
+And create the functions:
+```
+aws lambda create-function --function-name sale --zip-file 
+fileb://function.zip --handler sale.lambda_handler --runtime python3.6 
+--role arn:aws:iam::000000000000:role/lambdaVMHRole 
+--endpoint-url=http://localhost:4566
+```
+```
+aws lambda create-function --function-name error --zip-file
+fileb://function.zip --handler error.lambda_handler --runtime python3.6
+--role arn:aws:iam::000000000000:role/lambdaVMHRole
+--endpoint-url=http://localhost:4566
+```
+Make sure that the arn is correct, otherwise it won't work.
+Create the dynamoDB table:
+```
+aws --endpoint-url=http://localhost:4566 dynamodb create-table \
+--table-name vending-machine-helper \
+--attribute-definitions AttributeName=serial,AttributeType=S \
+--key-schema AttributeName=serial,KeyType=HASH \
+--provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
+```
+For the purpose of this project ReadCapacityUnits and WriteCapacityUnits were set to 5 as most likely it will never reach that capacity.
+Create the Queues:
+```
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name 
+sale.fifo --attributes FifoQueue=true
+```
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name
+error.fifo --attributes FifoQueue=true
+```
+
+```
