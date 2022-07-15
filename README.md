@@ -80,7 +80,7 @@ And copy back the file into the volume.
 ```
 Docker cp settings.js nodered_VMH:/data/settings.js
 ```
-Now open node red by accessing `localhost:1880` and on the menu choose `import flow` and select the flow.json file.
+Now open node red by accessing `localhost:1880` and on the menu choose `import flow` and select the `flow.json` file.
 Restart Node-RED.
 
 Before starting the simulation, it is necessary to set up the cloud environment first.
@@ -166,4 +166,10 @@ go on https://ifttt.com/, and create a new applet:
 * In "Then that" choose 'email' and complete the configuration. 
 * Retrive the key from the webhook and copy it into the error.py function.
 
+## Running the application
+
+The node Configuration on Node red is composed of two sections: The one above labeled "Start" and the one belove named "Actual business logic". First inject the `START` node which will read the devices.json to allow the simulation of the devices. 
+Then the flows can be operated either by injecting the `run simulation` node which will trigger every node it's connected to continuosly, or you can add an inject node and connect it to the specific machine you want to operate. 
+
+![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/Node Red.jpeg?raw=true)
 
