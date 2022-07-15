@@ -1,0 +1,213 @@
+    [
+        {
+            "serial": "VM0",
+            "products": {
+                "names": [
+                    "coca-cola",
+                    "sprite",
+                    "fanta",
+                    "water",
+                    "energy-drink",
+                    "red-bull"
+                ],
+                "prices": [
+                    "1.50",
+                    "1.00",
+                    "1.00",
+                    "0.50",
+                    "3.00",
+                    "3.00"
+                ],
+                "quantities": [
+                    "9",
+                    "18",
+                    "5",
+                    "10",
+                    "14",
+                    "10"
+                ]
+            }
+        },
+        {
+            "serial": "VM1",
+            "products": {
+                "names": [
+                    "chips",
+                    "taralli",
+                    "water",
+                    "candy"
+                ],
+                "prices": [
+                    "2.00",
+                    "2.00",
+                    "1.00",
+                    "0.50"
+                ],
+                "quantities": [
+                    "10",
+                    "10",
+                    "10",
+                    "10"
+                ]
+            }
+        },
+        {
+            "serial": "VM2",
+            "products": {
+                "names": [
+                    "amuchina",
+                    "tissues",
+                    "mask",
+                    "covid-test",
+                    "water",
+                    "soap",
+                    "water",
+                    "mineral-water"
+                ],
+                "prices": [
+                    "3.00",
+                    "1.00",
+                    "0.25",
+                    "5.00",
+                    "0.50",
+                    "2.00",
+                    "0.25",
+                    "0.50"
+                ],
+                "quantities": [
+                    "20",
+                    "20",
+                    "5",
+                    "10",
+                    "10",
+                    "20",
+                    "10",
+                    "5"
+                ]
+            }
+        },
+        {
+            "serial": "VM3",
+            "products": {
+                "names": [
+                    "coca-cola",
+                    "chips",
+                    "wafers",
+                    "energy-drink",
+                    "water"
+                ],
+                "prices": [
+                    "1.50",
+                    "2.00",
+                    "2.25",
+                    "3.00",
+                    "0.50"
+                ],
+                "quantities": [
+                    "20",
+                    "10",
+                    "7",
+                    "10",
+                    "5"
+                ]
+            }
+        },
+        {
+            "serial": "VM4",
+            "products": {
+                "names": [
+                    "pen",
+                    "pencil",
+                    "eraser"
+                ],
+                "prices": [
+                    "1.00",
+                    "1.00",
+                    "1.00"
+                ],
+                "quantities": [
+                    "20",
+                    "20",
+                    "20"
+                ]
+            }
+        },
+        {
+            "serial": "VM5",
+            "products": {
+                "names": [
+                    "pen",
+                    "candy",
+                    "thing",
+                    "colours",
+                    "ruler"
+                ],
+                "prices": [
+                    "1.00",
+                    "1.00",
+                    "1.00",
+                    "1.00",
+                    "1.50"
+                ],
+                "quantities": [
+                    "10",
+                    "7",
+                    "5",
+                    "1",
+                    "7"
+                ]
+            }
+        },
+        {
+            "serial": "VM6",
+            "products": {
+                "names": [
+                    "apple",
+                    "banana",
+                    "kiwi",
+                    "strawberry",
+                    "peach"
+                ],
+                "prices": [
+                    "2.00",
+                    "2.00",
+                    "2.00",
+                    "2.00",
+                    "2.50"
+                ],
+                "quantities": [
+                    "10",
+                    "10",
+                    "5",
+                    "10",
+                    "5"
+                ]
+            }
+        },
+        {
+            "serial": "VM7",
+            "products": {
+                "names": [
+                    "toothbrush",
+                    "toothpaste",
+                    "soap",
+                    "amuchina",
+                    "listerine"
+                ],
+                "prices": [
+                    "2.00",
+                    "2.00",
+                    "2.00",
+                    "2.00",
+                    "2.50"
+                ],
+                "quantities": [
+                    "10",
+                    "10",
+                    "5",
+                    "10",
+                    "5"
+                ]
+            }
+        }
+    ]
