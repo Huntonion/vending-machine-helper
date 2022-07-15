@@ -166,10 +166,11 @@ go on https://ifttt.com/, and create a new applet:
 * In "Then that" choose 'email' and complete the configuration. 
 * Retrive the key from the webhook and copy it into the error.py function.
 
-## Running the application
+## Running the simulation
 
 The node Configuration on Node red is composed of two sections: The one above labeled "Start" and the one belove named "Actual business logic". First inject the `START` node which will read the devices.json to allow the simulation of the devices. 
 Then the flows can be operated either by injecting the `run simulation` node which will trigger every node it's connected to continuosly, or you can add an inject node and connect it to the specific machine you want to operate. 
 
+<img src="https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/Node%20Red.pn" width="100" height="100">
 ![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/Node%20Red.png?raw=true)
 
