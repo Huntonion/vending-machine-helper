@@ -73,10 +73,20 @@ And add a line in the file
 ```
 FunctionGlobalContext:{
    os:require('os'),
-   awsModule:require('aws-sdk')
+   awsModule:require('aws-sdk') //add this line
 },
 ```
+And copy back the file into the container.
+```
+Docker cp settings.js nodered_VMH:/data/settings.js
+```
+A restart might be necessary.
 
+## Setting up LocalStack
+```
+docker run --rm --network VMH --name awslocal -it -p 4566:4566 -p 4571:4571  localstack/localstack
+```
+Once the container is running, run `aws config` to configurate it.
 
 
 
