@@ -80,7 +80,10 @@ And copy back the file into the volume.
 ```
 Docker cp settings.js nodered_VMH:/data/settings.js
 ```
-A restart might be necessary.
+Now open node red by accessing `localhost:1880` and on the menu choose `import flow` and select the flow.json file.
+Restart Node-RED.
+
+Before starting the simulation, it is necessary to set up the cloud environment first.
 
 ## Setting up LocalStack
 ```
@@ -90,17 +93,19 @@ Once the container is running, run `aws config` to configurate it.
 
 Create a role for our lambda function:
 ```
-aws iam create-role --role-name lambdaVMHRole 
---assume-role-policy-document 
+aws iam create-role --role-name lambdaVMHRole \
+--assume-role-policy-document \
 file://role.json --endpoint-url=http://localhost:4566
 ```
 
 And assign a policy to it:
 ```
-aws iam put-role-policy --role-name lambdaVMHRole --policy-name 
-lambdaPolicy --policy-document file://policy.json 
+aws iam put-role-policy --role-name lambdaVMHRole --policy-name \
+lambdaPolicy --policy-document file://policy.json \
 --endpoint-url=http://localhost:4566
 ```
+### Note:
+Before zipping the error function, setting up IFTTT is necessary since the file `error.py` requires a key. Informations on how to setup IFTTT are reported in the next section.
 
 zip both functions:
 ```
@@ -110,16 +115,16 @@ zip function.zip sale.py
 
 And create the functions:
 ```
-aws lambda create-function --function-name sale --zip-file 
-fileb://function.zip --handler sale.lambda_handler --runtime python3.6 
---role arn:aws:iam::000000000000:role/lambdaVMHRole 
+aws lambda create-function --function-name sale --zip-file \
+fileb://function.zip --handler sale.lambda_handler --runtime python3.6 \
+--role arn:aws:iam::000000000000:role/lambdaVMHRole \
 --endpoint-url=http://localhost:4566
 ```
 ```
-aws lambda create-function --function-name error --zip-file
-fileb://function.zip --handler error.lambda_handler --runtime python3.6
---role arn:aws:iam::000000000000:role/lambdaVMHRole
---endpoint-url=http://localhost:4566
+aws lambda create-function --function-name error --zip-file \
+fileb://function.zip --handler error.lambda_handler --runtime python3.6 \
+--role arn:aws:iam::000000000000:role/lambdaVMHRole \
+--endpoint-url=http://localhost:4566 
 ```
 Make sure that the arn is correct, otherwise it won't work.
 Create the dynamoDB table:
@@ -133,11 +138,32 @@ aws --endpoint-url=http://localhost:4566 dynamodb create-table \
 For the purpose of this project ReadCapacityUnits and WriteCapacityUnits were set to 5 as most likely it will never reach that capacity.
 Create the Queues:
 ```
-aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name 
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name \
 sale.fifo --attributes FifoQueue=true
 ```
-aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name
+```
+aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name \
 error.fifo --attributes FifoQueue=true
 ```
-
+Create the event source mappings in order to call the functions whenever an item is sent to that queue.
 ```
+aws lambda create-event-source-mapping --function-name sale --batch-size 3 \
+--event-source-arn arn:aws:sqs:us-east-2:000000000000:sale.fifo \
+--endpoint-url=http://localhost:4566
+```
+```
+aws lambda create-event-source-mapping --function-name error --batch-size 3 \
+--event-source-arn arn:aws:sqs:us-east-2:000000000000:error.fifo \
+--endpoint-url=http://localhost:4566
+```
+The cloud environment should now be functioning.
+
+
+## Setting up IFTTT 
+
+go on https://ifttt.com/, and create a new applet:
+* Select in 'If This' add a webhook, and select receive a web request. Choose the parameters to set up
+* In "Then that" choose 'email' and complete the configuration. 
+* Retrive the key from the webhook and copy it into the error.py function.
+
+
