@@ -171,5 +171,5 @@ go on https://ifttt.com/, and create a new applet:
 The node Configuration on Node red is composed of two sections: The one above labeled "Start" and the one belove named "Actual business logic". First inject the `START` node which will read the devices.json to allow the simulation of the devices. 
 Then the flows can be operated either by injecting the `run simulation` node which will trigger every node it's connected to continuosly, or you can add an inject node and connect it to the specific machine you want to operate. 
 
-![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/Node Red.jpeg?raw=true)
+![Architecture](https://github.com/Huntonion/vending-machine-helper/blob/main/pictures/Node%20Red.jpeg?raw=true)
 
