@@ -12,9 +12,11 @@ quantity is getting under a certain value, The application will notify the
 user through IFTTT sending him an email. The Amazon Web Services were 
 emulated using LocalStack. The core of this operations are the serverless 
 functions (two in this case):
-*One to update information about a certain vending machine in DynamoDB (or 
+
+* One to update information about a certain vending machine in DynamoDB 
+(or 
 create a new item if the Vending Machine didn't have any entry yet)
-*One to notify the user when there's a problem. 
+* One to notify the user when there's a problem. 
 
 Both the devices(vending machines) and the gateway were simulated on 
 Node-RED running in a docker container. Also, the MQTT broker 
