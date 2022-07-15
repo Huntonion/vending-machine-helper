@@ -1,0 +1,5 @@
+aiohttp==3.7.4.post0
+boto3==1.21.31
+botocore==1.24.31
+prettytable==3.3.0
+requests==2.26.0

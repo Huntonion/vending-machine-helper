@@ -39,6 +39,6 @@ def lambda_handler(event,context):
         msgBody = json.loads(record['body'])
         serial = msgBody['serial']
         price = msgBody['price']
-        itemLeft = msgBody['left']
-        item = dynamodb.update_item(TableName = 'vending-machine-helper',Key = {'serial':{'S':serial}}
-        ,AttributeUpdates= {'total':{'Value':{'N':price},'Action':'ADD'},'earnings':{'Value':{'N':price},'Action':'ADD'}})
+        itemLeft = str(msgBody['left'])
+        dynamodb.update_item(TableName = 'vending-machine-helper',Key = {'serial':{'S':serial}}
+        ,AttributeUpdates= {'total':{'Value':{'N':price},'Action':'ADD'},'earnings':{'Value':{'N':price},'Action':'ADD'},'itemsLeft':{'Value':{'N':itemLeft},'Action':'PUT'}})
