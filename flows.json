@@ -1,0 +1,814 @@
+[
+    {
+        "id": "491f386b3196d61a",
+        "type": "tab",
+        "label": "vending machines",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "033d7cb33772bffe",
+        "type": "tab",
+        "label": "gateway",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3a2210bbc53fdb23",
+        "type": "subflow",
+        "name": "Vending Machine",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 20,
+                "y": 200,
+                "wires": [
+                    {
+                        "id": "42635f97cd1d1b77"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "4e434c462a322363",
+        "type": "mqtt-broker",
+        "name": "broker_VMH:1883",
+        "broker": "broker_VMH",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "6ce13cbafe602d69",
+        "type": "function",
+        "z": "3a2210bbc53fdb23",
+        "name": "vending-machines",
+        "func": "//using a flow context in order to\n//update the variable each time\nvm=flow.get(\"serial\");\nvar VMS = flow.get(\"$parent.vms\");\nvar totalItemQuantity = flow.get(\"$parent.quantities\");\nvar totalConstant = flow.get(\"total\");\n//generating the random item to buy\nvar item = (Math.floor(Math.random() * VMS[vm].products.names.length));\n//random jamming chance\nvar rand = (Math.floor(Math.random() * 30));\nvar itemName = VMS[vm].products.names[item];\nvar itemQuantity = VMS[vm].products.quantities[item];\nvar itemPrice = VMS[vm].products.prices[item];\n\n\nvar msgToSend = {};\nif(itemQuantity != 0){\n    //getting the product info\n    itemQuantity--;\n    VMS[vm].products.quantities[item] = itemQuantity ;\n    totalItemQuantity[vm]--;\n    msgToSend[\"serial\"] =  VMS[vm].serial;\n    msgToSend[\"price\"] = itemPrice;\n    msgToSend[\"name\"] =  itemName;\n    msgToSend[\"left\"] = totalItemQuantity[vm];\n    msgToSend[\"percentage\"] =  (totalItemQuantity[vm]*100)/flow.get(\"total\")[vm];\n    if((totalItemQuantity[vm]*100)/flow.get(\"total\")[vm] >= 20){\n        flow.set('error',false)\n    }\n    //if the machine capacity is under 20%\n    if((totalItemQuantity[vm]*100)/flow.get(\"total\")[vm] < 20 && flow.get('error') == false){\n        msgToSend[\"error\"] = \"Vending Machine \" + VMS[vm].serial + \" is almost empty!\" ;\n        flow.set('error',true)\n    }\n    msg.payload = JSON.stringify(msgToSend);\n    flow.set(\"vms\",VMS);\n    return msg\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 340,
+        "wires": [
+            [
+                "4e4a2b2524193f35"
+            ]
+        ]
+    },
+    {
+        "id": "4e4a2b2524193f35",
+        "type": "switch",
+        "z": "3a2210bbc53fdb23",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "name",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "error",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 690,
+        "y": 280,
+        "wires": [
+            [
+                "21c293cbda0911d6"
+            ],
+            [
+                "817b4d490fca6be1"
+            ]
+        ]
+    },
+    {
+        "id": "21c293cbda0911d6",
+        "type": "mqtt out",
+        "z": "3a2210bbc53fdb23",
+        "name": "",
+        "topic": "vmh/sale",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4e434c462a322363",
+        "x": 820,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "817b4d490fca6be1",
+        "type": "mqtt out",
+        "z": "3a2210bbc53fdb23",
+        "name": "",
+        "topic": "vmh/error",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4e434c462a322363",
+        "x": 820,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "42635f97cd1d1b77",
+        "type": "switch",
+        "z": "3a2210bbc53fdb23",
+        "name": "",
+        "property": "flag",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 270,
+        "y": 240,
+        "wires": [
+            [
+                "9b0f8b595d8f63a9"
+            ],
+            [
+                "6ce13cbafe602d69"
+            ]
+        ]
+    },
+    {
+        "id": "1d6ffd01782c8d49",
+        "type": "change",
+        "z": "3a2210bbc53fdb23",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "flag",
+                "pt": "flow",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "total",
+                "pt": "flow",
+                "to": "$parent.quantities",
+                "tot": "flow",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "serial",
+                "pt": "flow",
+                "to": "$parent.serial",
+                "tot": "flow",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "error",
+                "pt": "flow",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "6ce13cbafe602d69"
+            ]
+        ]
+    },
+    {
+        "id": "9b0f8b595d8f63a9",
+        "type": "function",
+        "z": "3a2210bbc53fdb23",
+        "name": "",
+        "func": "flow.set(\"$parent.serial\",flow.get(\"$parent.serial\")+1);\nmsg.payload = flow.get(\"$parent.serial\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 120,
+        "wires": [
+            [
+                "1d6ffd01782c8d49"
+            ]
+        ]
+    },
+    {
+        "id": "f859d7dd6faf4e17",
+        "type": "file in",
+        "z": "491f386b3196d61a",
+        "name": "devices",
+        "filename": "/data/devices.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 300,
+        "y": 140,
+        "wires": [
+            [
+                "19e5ac3673eaf3fc"
+            ]
+        ]
+    },
+    {
+        "id": "8337ad5a6a712234",
+        "type": "inject",
+        "z": "491f386b3196d61a",
+        "name": "START",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 200,
+        "wires": [
+            [
+                "f859d7dd6faf4e17"
+            ]
+        ]
+    },
+    {
+        "id": "19e5ac3673eaf3fc",
+        "type": "json",
+        "z": "491f386b3196d61a",
+        "name": "json converter",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 280,
+        "y": 220,
+        "wires": [
+            [
+                "6bbc6d854e900ead"
+            ]
+        ]
+    },
+    {
+        "id": "0acdcbb3b1e8f29d",
+        "type": "change",
+        "z": "491f386b3196d61a",
+        "name": "set vms",
+        "rules": [
+            {
+                "t": "set",
+                "p": "vms",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 640,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6bbc6d854e900ead",
+        "type": "function",
+        "z": "491f386b3196d61a",
+        "name": "#items",
+        "func": "//aws configuration\nconst config = {\n  accessKeyId: \"test\",\n  secretAccessKey: \"test\",\n  region: \"us-east-2\",\n  endpoint: \"http://awslocal:4566\"\n}\nAWS.config.update(config);\n\n//counting items for each VM\nvar vmSums = [];\nvar VMS = msg.payload;\nVMS[1].products.quantities\nfor(let i = 0; i < VMS.length; i++) {\n    vmSums.push(VMS[i].products.quantities.map(x=>+x).reduce((a, b) => a + b, 0));\n}\nvmSumsFlow = {payload:vmSums} \nmsg.payload = VMS;\nreturn [vmSumsFlow,msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "AWS",
+                "module": "aws-sdk"
+            }
+        ],
+        "x": 450,
+        "y": 220,
+        "wires": [
+            [
+                "bd6e10517e6b1c03",
+                "7439f369a38e851b"
+            ],
+            [
+                "0acdcbb3b1e8f29d"
+            ]
+        ]
+    },
+    {
+        "id": "bd6e10517e6b1c03",
+        "type": "change",
+        "z": "491f386b3196d61a",
+        "name": "set quantities",
+        "rules": [
+            {
+                "t": "set",
+                "p": "quantities",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 660,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6fbdae9a0df3b761",
+        "type": "subflow:3a2210bbc53fdb23",
+        "z": "491f386b3196d61a",
+        "name": "Vending machine",
+        "x": 570,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "3dfc4ad4761b3f17",
+        "type": "subflow:3a2210bbc53fdb23",
+        "z": "491f386b3196d61a",
+        "name": "Vending machine",
+        "x": 570,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "fc486050496fdd4b",
+        "type": "subflow:3a2210bbc53fdb23",
+        "z": "491f386b3196d61a",
+        "name": "Vending machine",
+        "x": 570,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "2cc316fb8eed1e7f",
+        "type": "subflow:3a2210bbc53fdb23",
+        "z": "491f386b3196d61a",
+        "name": "Vending machine",
+        "x": 570,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "144675ad54a544ab",
+        "type": "subflow:3a2210bbc53fdb23",
+        "z": "491f386b3196d61a",
+        "name": "Vending machine",
+        "x": 570,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "00a4d622db143c47",
+        "type": "comment",
+        "z": "491f386b3196d61a",
+        "name": "Start",
+        "info": "In order to make the application work you have to run this batch of nodes first.",
+        "x": 350,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "5d4a4b1198462311",
+        "type": "comment",
+        "z": "491f386b3196d61a",
+        "name": "actual business logic",
+        "info": "Simply inject the \"run all\", which will start a process of randomly selecting items from every every vending machine, or add an inject node if you want to operate one specific vending machine",
+        "x": 380,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "02a80ea7d35a4450",
+        "type": "delay",
+        "z": "491f386b3196d61a",
+        "name": "",
+        "pauseType": "random",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "10",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 340,
+        "y": 640,
+        "wires": [
+            [
+                "3dfc4ad4761b3f17"
+            ]
+        ]
+    },
+    {
+        "id": "900bced150648609",
+        "type": "delay",
+        "z": "491f386b3196d61a",
+        "name": "",
+        "pauseType": "random",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "10",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 340,
+        "y": 580,
+        "wires": [
+            [
+                "fc486050496fdd4b"
+            ]
+        ]
+    },
+    {
+        "id": "3ffe3f19b679b833",
+        "type": "delay",
+        "z": "491f386b3196d61a",
+        "name": "",
+        "pauseType": "random",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "10",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 340,
+        "y": 520,
+        "wires": [
+            [
+                "2cc316fb8eed1e7f"
+            ]
+        ]
+    },
+    {
+        "id": "bd9685af5ff7b0d8",
+        "type": "delay",
+        "z": "491f386b3196d61a",
+        "name": "",
+        "pauseType": "random",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "10",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 340,
+        "y": 460,
+        "wires": [
+            [
+                "144675ad54a544ab"
+            ]
+        ]
+    },
+    {
+        "id": "4683dc2b1c6c9dfe",
+        "type": "delay",
+        "z": "491f386b3196d61a",
+        "name": "",
+        "pauseType": "random",
+        "timeout": "6",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "10",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 340,
+        "y": 400,
+        "wires": [
+            [
+                "6fbdae9a0df3b761"
+            ]
+        ]
+    },
+    {
+        "id": "77a6fe21b8a6ed55",
+        "type": "http in",
+        "z": "491f386b3196d61a",
+        "name": "refill",
+        "url": "/refill",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 70,
+        "y": 80,
+        "wires": [
+            [
+                "f859d7dd6faf4e17",
+                "076cd14fcd300110"
+            ]
+        ]
+    },
+    {
+        "id": "076cd14fcd300110",
+        "type": "http response",
+        "z": "491f386b3196d61a",
+        "name": "response",
+        "statusCode": "200",
+        "headers": {},
+        "x": 300,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "7439f369a38e851b",
+        "type": "switch",
+        "z": "491f386b3196d61a",
+        "name": "",
+        "property": "first",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 550,
+        "y": 120,
+        "wires": [
+            [
+                "5507d1f91d8bd71e"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5507d1f91d8bd71e",
+        "type": "change",
+        "z": "491f386b3196d61a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "first",
+                "pt": "flow",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "serial",
+                "pt": "flow",
+                "to": "-1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 700,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5d6aa18182b84822",
+        "type": "inject",
+        "z": "491f386b3196d61a",
+        "name": "run simulation",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "7",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 520,
+        "wires": [
+            [
+                "4683dc2b1c6c9dfe",
+                "bd9685af5ff7b0d8",
+                "3ffe3f19b679b833",
+                "900bced150648609",
+                "02a80ea7d35a4450"
+            ]
+        ]
+    },
+    {
+        "id": "ffd76a81b95c235d",
+        "type": "function",
+        "z": "033d7cb33772bffe",
+        "name": "",
+        "func": "var sqs = new AWS.SQS();\n\nvar params= {\n    MessageBody: msg.payload,\n    QueueUrl: \"http://awslocal:4566/000000000000/sale.fifo\",\n    MessageGroupId: \"1\"\n}\n\nsqs.sendMessage(params, function(err,data){\n    if(err){\n        console.log(\"Error\",err);\n    }\n    else{\n        console.log(\"Success\",data.MessageId);\n    }\n})\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "AWS",
+                "module": "aws-sdk"
+            }
+        ],
+        "x": 420,
+        "y": 180,
+        "wires": [
+            [
+                "49cad090d915f024"
+            ]
+        ]
+    },
+    {
+        "id": "1e8fd93d0dabc0ca",
+        "type": "function",
+        "z": "033d7cb33772bffe",
+        "name": "",
+        "func": "var sqs = new AWS.SQS();\n\nvar params= {\n    MessageBody: msg.payload,\n    QueueUrl: \"http://awslocal:4566/000000000000/error.fifo\",\n    MessageGroupId: \"1\"\n}\n\nsqs.sendMessage(params, function(err,data){\n    if(err){\n        console.log(\"Error\",err);\n    }\n    else{\n        console.log(\"Success\",data.MessageId);\n    }\n})\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "AWS",
+                "module": "aws-sdk"
+            }
+        ],
+        "x": 420,
+        "y": 240,
+        "wires": [
+            [
+                "f5f10e10d66a9d56"
+            ]
+        ]
+    },
+    {
+        "id": "49cad090d915f024",
+        "type": "debug",
+        "z": "033d7cb33772bffe",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "f5f10e10d66a9d56",
+        "type": "debug",
+        "z": "033d7cb33772bffe",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "c080991b7b69e65e",
+        "type": "mqtt in",
+        "z": "033d7cb33772bffe",
+        "name": "",
+        "topic": "vmh/sale",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "4e434c462a322363",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 260,
+        "y": 180,
+        "wires": [
+            [
+                "ffd76a81b95c235d"
+            ]
+        ]
+    },
+    {
+        "id": "7c72518b88e15d40",
+        "type": "mqtt in",
+        "z": "033d7cb33772bffe",
+        "name": "",
+        "topic": "vmh/error",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "4e434c462a322363",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 260,
+        "y": 240,
+        "wires": [
+            [
+                "1e8fd93d0dabc0ca"
+            ]
+        ]
+    }
+]
