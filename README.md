@@ -57,7 +57,8 @@ docker run -itd --network VMH --name mybroker eclipse-mosquitto mosquitto -c /mo
 
  ```
 In order to simulate the devices, the application uses a Json file (devices.json), which at the moment includes 8 devices, however, as long as the document is correctly formatted, you can add as many devices as you want up to potentially an infinite number. Therefore, the next step is to copy the devices.json file into the volume, to do so:
-*Note:this project was developed on MAC OS , and accessing the volume directly is not possible, therefore the most suitable solution was to copy and paste the files out and back in the volume*
+
+*Note: this project was developed on MAC OS , and accessing the volume directly is not possible, therefore the most suitable solution was to copy and paste the files out and back in the volume*
 
 ```
 docker cp devices.json nodered_VMH:/data/devices.json
