@@ -194,3 +194,16 @@ The available commands are:
 * CLEAR *serials*, to set the local earnings to zero. Example: `CLEAR VM1 VM2`
 * REFILL, to refill all the machines. Unfortunately Vending Machine Helper does not support single machine refill yet.
 * QUIT, to quit.
+
+
+## Curiosity:
+
+In order to show a demo for this application working on a real Vending Machine, one was built using arduino/raspberry pi and various sensors. This is the architecture:
+
+![architecture](https://user-images.githubusercontent.com/32482411/216645539-0018e7b1-a1ed-478c-baf8-323b70b28374.png)
+
+Also, a video demonstration: 
+
+https://user-images.githubusercontent.com/32482411/216645604-5591f320-cc5c-46bd-9b4b-a817854d8d97.mp4
+
+
